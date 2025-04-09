@@ -90,12 +90,12 @@
             document.getElementById("bloqueio").style.display = "none";
             document.getElementById("comprovante").style.display = "block";
           } else {
-            mostrarBloqueio("Erro ao verificar a localização.");
+            mostrarBloqueio("Erro ao verificar a localização para exibir o comprovante de pagamento.");
           }
         })
         .catch(error => {
           console.error("Erro:", error);
-          mostrarBloqueio("Erro ao enviar os dados de localização.");
+          mostrarBloqueio("Erro ao carregar comprovante de pagamento.");
         });
     }
 
